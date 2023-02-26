@@ -1,1 +1,1 @@
-# web-programming-course
+# Java/ReactJS Bulgarian Wordle project
