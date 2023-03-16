@@ -74,12 +74,11 @@
 	<form method="post" th:action="@{/games/{gameId}/guesses(gameId=${game.id})}">
 		<div th:each="guess: ${game.guesses}">
 			<div>
-					<span
-						class="Wordle-Match"
-						th:each="char: ${guess.word.toCharArray()}"
-						th:text="${char}"
-						th:classappend="${'Wordle-Match_' + guess.matches.charAt(charStat.index)}">a
-					</span>
+				<span class="Wordle-Match"
+					  th:each="char: ${guess.word.toCharArray()}"
+					  th:text="${char}"
+					  th:classappend="${'Wordle-Match_' + guess.matches.charAt(charStat.index)}">a
+				</span>
 			</div>
 		</div>
 		<div th:if="!${end}">
@@ -90,12 +89,11 @@
 	<div>
 		<h3>Статистика за използваните букви:</h3>
 		<div class="Wordle-LettersStat">
-				<span
-						class="Wordle-Match"
-						th:each="char: ${game.alphabet.toCharArray()}"
-						th:text="${char}"
-						th:classappend="${'Wordle-Match_' + game.alphabetMatches.charAt(charStat.index)}">a
-				</span>
+			<span class="Wordle-Match"
+				  th:each="char: ${game.alphabet.toCharArray()}"
+				  th:text="${char}"
+				  th:classappend="${'Wordle-Match_' + game.alphabetMatches.charAt(charStat.index)}">a
+			</span>
 		</div>
 	</div>
 </div>
