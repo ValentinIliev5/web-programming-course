@@ -2,6 +2,7 @@ package pu.fmi.wordle.logic;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 import pu.fmi.wordle.model.Game;
@@ -28,6 +29,8 @@ public class GameServiceImpl implements GameService {
     game.setStartedOn(LocalDateTime.now());
     game.setWord(wordRepo.getRandom());
     game.setGuesses(new ArrayList<>(game.getMaxGuesses()));
+    updateAlphabetMatches(game);
+    gameRepo.save(game);
     return game;
   }
 
@@ -40,65 +43,56 @@ public class GameServiceImpl implements GameService {
 
   @Override
   public Game makeGuess(String id, String word) {
-    checkIfWordIsValid(word);
+    var game = getGame(id);
+    if (!wordRepo.exists(word)) throw new UnknownWordException(word);
 
-    Game currentGame = checkIfGameIsValid(id);
-    String currentWord = currentGame.getWord();
-
-    Guess guess = new Guess();
-
+    var guess = new Guess();
     guess.setWord(word);
     guess.setMadeAt(LocalDateTime.now());
-    guess.setMatches(getMatches(currentWord,word));
-
-    currentGame.getGuesses().add(guess);
-
-
-    return currentGame;
+    guess.setMatches(findMatches(game.getWord(), word));
+    game.getGuesses().add(guess);
+    updateAlphabetMatches(game);
+    return game;
   }
 
-  public void checkIfWordIsValid(String word){
+  private String findMatches(String chosen, String given) {
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < given.length(); i++) {
+      char cc = given.charAt(i);
+      char mc = Guess.NO_MATCH;
+      if (chosen.charAt(i) == cc) {
+        mc = Guess.PLACE_MATCH;
+      } else if (chosen.indexOf(cc) >= 0) {
+        mc = Guess.LETTER_MATCH;
+      }
 
-    if (!wordRepo.exists(word))
-    {
-      throw new UnknownWordException(word);
+      result.append(mc);
     }
 
-  }
-  public Game checkIfGameIsValid(String id){
-
-    if(gameRepo.get(id)==null)
-    {
-      throw new GameNotFoundException(id);
-    }
-    return gameRepo.get(id);
-
+    return result.toString();
   }
 
-  public String getMatches(String guessWord,String gameWord){
+  private void updateAlphabetMatches(Game game) {
+    StringBuilder result = new StringBuilder();
+    game.getAlphabet()
+        .chars()
+        .map(letter -> getLetterMatch(game.getGuesses(), (char) letter))
+        .forEach(letter -> result.append((char) letter));
+    game.setAlphabetMatches(result.toString());
+  }
 
-    StringBuilder matches = new StringBuilder();
-
-    for(int i=0;i<5;i++)
-    {
-      int indexOfChar = guessWord.indexOf(gameWord.toCharArray()[i]);
-
-      if(indexOfChar !=-1)
-      {
-        if(indexOfChar ==i)
-        {
-          matches.append("P");
-        }
-        else
-        {
-          matches.append("L");
+  private char getLetterMatch(List<Guess> guesses, char letter) {
+    char match = 'U'; // Not used yet
+    for (var guess : guesses) {
+      var word = guess.getWord();
+      var matches = guess.getMatches();
+      for (int i = 0; i < word.length(); i++) {
+        if (word.charAt(i) == letter && match != Guess.PLACE_MATCH) {
+          match = matches.charAt(i);
         }
       }
-      else
-      {
-        matches.append("N");
-      }
     }
-    return matches.toString();
+
+    return match;
   }
 }

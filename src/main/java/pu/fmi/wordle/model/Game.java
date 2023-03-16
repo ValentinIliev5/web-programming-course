@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Game {
+
   String id;
   String word;
   LocalDateTime startedOn;
+  String alphabet = "абвгдежзийклмнопрстуфхцчшщъьюя";
+  String alphabetMatches;
 
   int maxGuesses = 6;
   List<Guess> guesses;
@@ -49,5 +52,21 @@ public class Game {
 
   public void setGuesses(List<Guess> guesses) {
     this.guesses = guesses;
+  }
+
+  public String getAlphabet() {
+    return alphabet;
+  }
+
+  public void setAlphabet(String alphabet) {
+    this.alphabet = alphabet;
+  }
+
+  public String getAlphabetMatches() {
+    return alphabetMatches;
+  }
+
+  public void setAlphabetMatches(String alphabetMatches) {
+    this.alphabetMatches = alphabetMatches;
   }
 }
