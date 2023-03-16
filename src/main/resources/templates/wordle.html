@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<style type="text/css">
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<style type="text/css">
 .Wordle {
 	height: 100vh;
 	display: flex;
@@ -63,37 +63,41 @@
 </style>
 </head>
 <body>
-	<div class="Wordle">
-<!-- 		<h1 class="Wordle-Message">Браво! Позна думата с 5 опита 🎉 -->
-<!-- 			<a href="/">Играй отновo</a> -->
-<!-- 		</h1> -->
-<!-- 		<h1 class="Wordle-Message">Жалко! Не успя да познаеш думата 😢 -->
-<!-- 			<a href="/">Опитай пак</a> -->
-<!-- 		</h1> -->
-		<h1 th:if="${error}" th:text="${error}">Невалидна дума</h1>
-		<form method="post" th:action="@{/games/{gameId}/guesses(gameId=${game.id})}">
-			<div th:each="guess: ${game.guesses}">
-				<div>
-					<span 
+<div class="Wordle">
+	<h1 th:if="${won}" class="Wordle-Message">Браво! Позна думата с <span th:text="${tries}"></span> опита 🎉
+		<a href="/">Играй отновo</a>
+	</h1>
+	<h1 th:if="${lost}" class="Wordle-Message">Жалко! Не успя да познаеш думата 😢
+		<a href="/">Опитай пак</a>
+	</h1>
+	<h1 th:if="${error}" th:text="${error}">Невалидна дума</h1>
+	<form method="post" th:action="@{/games/{gameId}/guesses(gameId=${game.id})}">
+		<div th:each="guess: ${game.guesses}">
+			<div>
+					<span
 						class="Wordle-Match"
 						th:each="char: ${guess.word.toCharArray()}"
-						th:text="${char}" 
-						th:classappend="${'Wordle-Match_' + guess.matches.charAt(charStat.index)}">a</span>
-				</div>
-			</div>
-			<input name="guess" maxlength="5" autofocus/>
-			<button>Check</button>
-		</form>
-		<div>
-			<h3>Статистика за използваните букви:</h3>
-			<div class="Wordle-LettersStat">
-				<span 
-					class="Wordle-Match"
-					th:each="char: ${game.alphabet.toCharArray()}"
-					th:text="${char}" 
-					th:classappend="${'Wordle-Match_' + game.alphabetMatches.charAt(charStat.index)}">a</span>
+						th:text="${char}"
+						th:classappend="${'Wordle-Match_' + guess.matches.charAt(charStat.index)}">a
+					</span>
 			</div>
 		</div>
+		<div th:if="!${end}">
+			<input name="guess" maxlength="5" autofocus/>
+			<button>Check</button>
+		</div>
+	</form>
+	<div>
+		<h3>Статистика за използваните букви:</h3>
+		<div class="Wordle-LettersStat">
+				<span
+						class="Wordle-Match"
+						th:each="char: ${game.alphabet.toCharArray()}"
+						th:text="${char}"
+						th:classappend="${'Wordle-Match_' + game.alphabetMatches.charAt(charStat.index)}">a
+				</span>
+		</div>
 	</div>
+</div>
 </body>
 </html>
