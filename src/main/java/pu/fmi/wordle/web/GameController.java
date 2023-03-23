@@ -25,15 +25,13 @@ public class GameController {
   public String startNewGame(Model model) {
     var game = gameService.startNewGame();
     model.addAttribute("game", game);
-    model.addAttribute("tries", game.getGuesses().size());
     return "redirect:/games/" + game.getId();
   }
 
   @GetMapping("/{gameId}")
   public String showGame(@PathVariable String gameId, Model model) {
     var game = gameService.getGame(gameId);
-    model.addAttribute("game",game);
-    model.addAttribute("tries", game.getGuesses().size());
+    model.addAttribute("game", game);
     return "wordle";
   }
 
@@ -41,32 +39,11 @@ public class GameController {
   public String makeGuess(@PathVariable String gameId, @RequestParam String guess, Model model) {
     try {
       var game = gameService.makeGuess(gameId, guess);
-      if(guess.equals(game.getWord())&& game.getGuesses().size()<game.getMaxGuesses())
-      {
-        model.addAttribute("game",game);
-        model.addAttribute("won",true);
-        model.addAttribute("lost",false);
-        model.addAttribute("end",true);
-        model.addAttribute("tries",game.getGuesses().size());
-        return "wordle";
-      }
-      else if(game.getGuesses().size()<game.getMaxGuesses())
-      {
-        return format("redirect:/games/%s", game.getId());
-      }
-
-      model.addAttribute("game",game);
-      model.addAttribute("lost",true);
-      model.addAttribute("won",false);
-      model.addAttribute("end",true);
-
-      return "wordle";
-
+      return format("redirect:/games/%s", game.getId());
     } catch (UnknownWordException e) {
       var game = gameService.getGame(gameId);
       model.addAttribute("game", game);
       model.addAttribute("error", format("[%s] word doesn't exist", guess));
-
       return "wordle";
     }
   }

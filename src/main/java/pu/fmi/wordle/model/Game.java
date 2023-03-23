@@ -3,70 +3,106 @@ package pu.fmi.wordle.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
+
+@Entity
 public class Game {
 
-  String id;
-  String word;
-  LocalDateTime startedOn;
-  String alphabet = "абвгдежзийклмнопрстуфхцчшщъьюя";
-  String alphabetMatches;
+	public enum GameState {
+		ONGOING, WIN, LOSS
+	}
 
-  int maxGuesses = 6;
-  List<Guess> guesses;
+	@Id
+	@Column(name = "game_id")
+	String id;
 
-  public String getId() {
-    return id;
-  }
+	String word;
+	LocalDateTime startedOn;
 
-  public void setId(String id) {
-    this.id = id;
-  }
+	@Transient
+	String alphabet = "абвгдежзийклмнопрстуфхцчшщъьюя";
 
-  public String getWord() {
-    return word;
-  }
+	@Column(name = "matches")
+	String alphabetMatches;
 
-  public void setWord(String word) {
-    this.word = word;
-  }
+	int maxGuesses = 6;
 
-  public LocalDateTime getStartedOn() {
-    return startedOn;
-  }
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "game_id")
+	List<Guess> guesses;
 
-  public void setStartedOn(LocalDateTime startedOn) {
-    this.startedOn = startedOn;
-  }
+	@Enumerated(EnumType.STRING)
+	GameState state = GameState.ONGOING;
 
-  public int getMaxGuesses() {
-    return maxGuesses;
-  }
+	public String getId() {
+		return id;
+	}
 
-  public void setMaxGuesses(int maxGuesses) {
-    this.maxGuesses = maxGuesses;
-  }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-  public List<Guess> getGuesses() {
-    return guesses;
-  }
+	public String getWord() {
+		return word;
+	}
 
-  public void setGuesses(List<Guess> guesses) {
-    this.guesses = guesses;
-  }
+	public void setWord(String word) {
+		this.word = word;
+	}
 
-  public String getAlphabet() {
-    return alphabet;
-  }
+	public LocalDateTime getStartedOn() {
+		return startedOn;
+	}
 
-  public void setAlphabet(String alphabet) {
-    this.alphabet = alphabet;
-  }
+	public void setStartedOn(LocalDateTime startedOn) {
+		this.startedOn = startedOn;
+	}
 
-  public String getAlphabetMatches() {
-    return alphabetMatches;
-  }
+	public int getMaxGuesses() {
+		return maxGuesses;
+	}
 
-  public void setAlphabetMatches(String alphabetMatches) {
-    this.alphabetMatches = alphabetMatches;
-  }
+	public void setMaxGuesses(int maxGuesses) {
+		this.maxGuesses = maxGuesses;
+	}
+
+	public List<Guess> getGuesses() {
+		return guesses;
+	}
+
+	public void setGuesses(List<Guess> guesses) {
+		this.guesses = guesses;
+	}
+
+	public String getAlphabet() {
+		return alphabet;
+	}
+
+	public void setAlphabet(String alphabet) {
+		this.alphabet = alphabet;
+	}
+
+	public String getAlphabetMatches() {
+		return alphabetMatches;
+	}
+
+	public void setAlphabetMatches(String alphabetMatches) {
+		this.alphabetMatches = alphabetMatches;
+	}
+
+	public GameState getState() {
+		return state;
+	}
+
+	public void setState(GameState state) {
+		this.state = state;
+	}
 }
